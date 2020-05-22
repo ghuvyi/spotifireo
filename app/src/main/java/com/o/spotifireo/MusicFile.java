@@ -64,12 +64,12 @@ public class MusicFile implements Serializable {
     }
 
     public void stitchByteArray(byte[] stitch){
-        byte[] tempArray= Arrays.copyOf(this.data,data.length+stitch.length);
-        for (int i=data.length,j=0;i<tempArray.length;i++,j++){
-            tempArray[i]=stitch[j];
-        }
+        byte[] finalArray=new byte[this.data.length+stitch.length];
+        System.arraycopy(this.data, 0, finalArray, 0, this.data.length);
+        System.arraycopy(stitch, 0, finalArray, this.data.length, stitch.length);
 
-        this.data=tempArray;
+
+        this.data=finalArray;
 
     }
 
@@ -94,16 +94,22 @@ public class MusicFile implements Serializable {
         return output;
     }
 
-    public void saveFileLocally(){
+    public File saveFileLocally(){
+        File a=new File("//sdcard");
+
         try{
-            OutputStream bos=new BufferedOutputStream(new FileOutputStream(new File(trackNAme+".mp3")));
+
+            OutputStream bos=new BufferedOutputStream(new FileOutputStream( a=new File("//sdcard//"+trackNAme)));
             for(int i=0;i<this.data.length;i++){
                 bos.write(this.data[i]);
             }
+
         } catch (FileNotFoundException e){
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return a;
+
     }
 }
