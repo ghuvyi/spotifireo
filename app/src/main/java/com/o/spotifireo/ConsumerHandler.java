@@ -9,6 +9,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.View;
+import android.widget.Toast;
 
 import org.apache.poi.hwpf.model.FIBFieldHandler;
 
@@ -33,6 +34,10 @@ public class ConsumerHandler extends AsyncTask<Object,Void,Void> {
     DownloadManager dm;
     Context context;
     Activity activity;
+    String DLMsg;
+    String PLMsg;
+    boolean DLCheck=true;
+    boolean PLCheck=false;
 
     public ConsumerHandler(Context context){
         this.context=context;
@@ -48,25 +53,13 @@ public class ConsumerHandler extends AsyncTask<Object,Void,Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-       /* if(type=="Download"){
-            File dir = new File("//sdcard//Download//");
-            File test2=file.get(0);
-            try {
-                FileInputStream fis=new FileInputStream(test2);
-                File test=new File(dir,fis);
-                player.setD
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-            dm.addCompletedDownload(test.getName(), test.getName(), true, "text/plain",test.getAbsolutePath(),test.length(),true);
-
-        }*/
+     if(type=="Download"){
+         Toast.makeText(context,DLMsg, Toast.LENGTH_LONG).show();
+     }
 
       if(type=="Play") {
+          if(!PLCheck){
+          Toast.makeText(context,PLMsg, Toast.LENGTH_LONG).show();}
           boolean playing = true;
           boolean flag = false;
           boolean lol = true;
@@ -209,6 +202,9 @@ public class ConsumerHandler extends AsyncTask<Object,Void,Void> {
                                 if(!player.isPlaying()&&flog) {
                                     flog=false;
 
+                                    PLCheck=true;
+
+
 
                                     tempf = file.get(0);
                                     FileInputStream fis = new FileInputStream(tempf);
@@ -225,20 +221,31 @@ public class ConsumerHandler extends AsyncTask<Object,Void,Void> {
                         if(message.getTransfer()==false){
                             if(message.song.equals("File not found")){
                                 System.err.println("Song does not exist");
+                                DLMsg="Song not found";
+                                PLMsg="Song not found";
+                                DLCheck=false;
                                 break;
                             }
                             else if(message.song.equals("artist not found")){
                                 System.out.println("Artist not found");
+                                DLMsg="Artist not found";
+                                PLMsg="Artist not found";
+                                DLCheck=false;
                                 break;
 
                             }
                             else if(message.song.equals("Song not found")){
                                 System.out.println("Song not found");
+                               DLMsg="Song not found";
+                               PLMsg="Song not found";
+                                DLCheck=false;
                                 break;
 
                             }
                             else {
                                 System.out.println("Song Received");
+                                DLMsg="Download completed";
+                                PLMsg="Now playing"+song;
 
                                 break;
                             }
@@ -252,7 +259,7 @@ public class ConsumerHandler extends AsyncTask<Object,Void,Void> {
                     }
                 }
 
-               if(type=="Download"){
+               if(type=="Download"&&DLCheck){
                    finalMusicFile.setTrackNAme(song);
                    Uri contentUri = Uri.fromFile(finalMusicFile.saveFileLocally());
                    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
